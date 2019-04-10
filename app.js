@@ -17,6 +17,7 @@ mongoose.connection
       );
   });
 
+
 mongoose.connect(config.MONGO_URL, { useNewUrlParser: true });
 
 const app = express();
