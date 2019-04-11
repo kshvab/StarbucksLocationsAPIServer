@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const request = require('request');
 const sblocation = require('../models/sblocation');
+const apikey = require('../models/apikey');
 const uuidv1 = require('uuid/v1');
 
 router.get('/updatedataset', function(req, res) {
@@ -44,12 +45,22 @@ router.get('/updatedataset', function(req, res) {
 });
 
 router.get('/givemeapikey', function(req, res) {
-  if (req.headers['authorization'] == 12345) {
+  if (req.headers['authorization'] == 'apitalks') {
     createNewUser();
-  } else res.status(401).send('Access denied,\na valid API key is Required!');
+  } else res.status(401).send('Access denied,\na valid administrator Header is Required!');
 
-  res.send('The database has been updated');
+  function createNewUser() {
+    let generatedApiKey = uuidv1();
+    console.log(generatedApiKey);
 
-  console.log(uuidv1());
+    let newApiKey = new apikey({ key: generatedApiKey });
+    newApiKey.save(function(err) {
+      if (err) {
+        console.log('I can not save new Api Key to DB :(');
+        return err;
+      }
+      res.send('New API-key generated: ' + generatedApiKey);
+    });
+  }
 });
 module.exports = router;
