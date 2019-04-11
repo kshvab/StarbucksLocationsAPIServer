@@ -24,8 +24,6 @@ router.get('/', (req, res) => {
       });
     }
   });
-
-  console.log(req.headers['authorization']);
 });
 
 router.get('/filter', (req, res) => {
@@ -69,8 +67,60 @@ router.get('/filter', (req, res) => {
       }
     }
   });
-
-  console.log(req.headers['authorization']);
 });
 
+router.delete('/delete/:store_id', (req, res) => {
+  apikey.findOne({ key: req.headers['authorization'] }, function(err, result) {
+    if (err) {
+      console.log('Problems with connecting to DB');
+      res.status(500).send('Problems with connecting to DB');
+    }
+    if (result) deleteItem();
+    else {
+      res.status(401).send('Access denied,\na valid API key is Required!');
+    }
+
+    function deleteItem() {
+      let store_id = req.params.store_id;
+      sblocation.deleteOne({ store_id }, function(err, obj) {
+        if (err) {
+          console.log('I can not remove item from DB :(');
+          return err;
+        }
+        if (obj.n) res.send('Item deleted successfully!');
+        else res.send('This ID does not exist!');
+      });
+    }
+  });
+});
+
+/*
+router.put('/update/:store_id', (req, res) => {
+  let store_id = req.params.store_id;
+  console.log(store_id);
+  console.log(req.query);
+  
+  apikey.findOne({ key: req.headers['authorization'] }, function(err, result) {
+    if (err) {
+      console.log('Problems with connecting to DB');
+      res.status(500).send('Problems with connecting to DB');
+    }
+    if (result) showData();
+    else {
+      res.status(401).send('Access denied,\na valid API key is Required!');
+    }
+
+    function showData() {
+      sblocation.find({}, function(err, obj) {
+        if (err) {
+          console.log('I can not get dataset from DB :(');
+          return err;
+        }
+        res.json(obj);
+      });
+    }
+  });
+
+});
+*/
 module.exports = router;

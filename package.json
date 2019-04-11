@@ -1,7 +1,7 @@
 {
   "name": "StarbucksLocationsAPIserver",
-  "version": "1.0.3",
-  "version-GIT-description": "Filtering adding",
+  "version": "1.0.4",
+  "version-GIT-description": "v1.0.4 CRUD - Delete operation",
   "description": "Nick Shvab test task for Apitalks - Starbucks Locations API server",
   "main": "index.js",
   "scripts": {
