@@ -1,7 +1,7 @@
 {
   "name": "StarbucksLocationsAPIserver",
-  "version": "1.0.2",
-  "version-GIT-description": "Nick Shvab test task for Apitalks - Starbucks Locations API server",
+  "version": "1.0.3",
+  "version-GIT-description": "Filtering adding",
   "description": "Nick Shvab test task for Apitalks - Starbucks Locations API server",
   "main": "index.js",
   "scripts": {
