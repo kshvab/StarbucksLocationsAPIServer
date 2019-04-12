@@ -58,7 +58,7 @@ router.get('/filter', (req, res) => {
         sblocation.find(userQuery, function(err, obj) {
           if (err) {
             console.log('I can not get Filtered Dataset from DB :(');
-            res.status(400).send('request error');
+            res.status(400).send('Request error');
             return err;
           }
           if (obj.length) res.json(obj);
@@ -85,6 +85,7 @@ router.delete('/delete/:store_id', (req, res) => {
       sblocation.deleteOne({ store_id }, function(err, obj) {
         if (err) {
           console.log('I can not remove item from DB :(');
+          res.status(400).send('Request error');
           return err;
         }
         if (obj.n) res.send('Item deleted successfully!');
@@ -94,33 +95,94 @@ router.delete('/delete/:store_id', (req, res) => {
   });
 });
 
-/*
-router.put('/update/:store_id', (req, res) => {
-  let store_id = req.params.store_id;
-  console.log(store_id);
-  console.log(req.query);
-  
+router.post('/add', (req, res) => {
+  let store_id = req.query.store_id;
+
   apikey.findOne({ key: req.headers['authorization'] }, function(err, result) {
     if (err) {
       console.log('Problems with connecting to DB');
       res.status(500).send('Problems with connecting to DB');
     }
-    if (result) showData();
+    if (result) existenceСheck();
     else {
       res.status(401).send('Access denied,\na valid API key is Required!');
     }
 
-    function showData() {
-      sblocation.find({}, function(err, obj) {
-        if (err) {
-          console.log('I can not get dataset from DB :(');
-          return err;
-        }
-        res.json(obj);
-      });
+    function existenceСheck() {
+      if (store_id) {
+        sblocation.findOne({ store_id }, function(err, result) {
+          if (err) {
+            console.log('Problems with connecting to DB');
+            res.status(500).send('Problems with connecting to DB');
+          }
+          if (result) {
+            console.log(result);
+            console.log('Such store_id already exists in the database.');
+            res.send('Such store_id already exists in the database.');
+          } else {
+            addNewItem();
+          }
+        });
+      } else {
+        console.log('Request error');
+        res.status(400).send('Request error');
+        return err;
+      }
+
+      function addNewItem() {
+        let newLocation = new sblocation(req.query);
+        newLocation.save(function(err) {
+          if (err) {
+            console.log('I can not save Location to DB :(');
+            res.status(500).send('Problems with connecting to DB');
+            return err;
+          } else {
+            res.send('New location saved.');
+          }
+        });
+      }
     }
   });
-
 });
-*/
+
+router.put('/update/:store_id', (req, res) => {
+  let store_id = req.params.store_id;
+
+  apikey.findOne({ key: req.headers['authorization'] }, function(err, result) {
+    if (err) {
+      console.log('Problems with connecting to DB');
+      res.status(500).send('Problems with connecting to DB');
+    }
+    if (result) existenceСheck();
+    else {
+      res.status(401).send('Access denied,\na valid API key is Required!');
+    }
+
+    function existenceСheck() {
+      if (store_id) {
+        sblocation.updateOne({ store_id }, req.query, function(err, result) {
+          if (err) {
+            console.log('Request error');
+            res.status(400).send('Request error');
+            return;
+          }
+
+          if (!result.nModified) {
+            console.log('This ID does not exist!');
+            res.send('This ID does not exist!');
+            return;
+          }
+
+          console.log('1 document updated');
+          res.send('1 document updated!');
+        });
+      } else {
+        console.log('Request error');
+        res.status(400).send('Request error');
+        return err;
+      }
+    }
+  });
+});
+
 module.exports = router;
