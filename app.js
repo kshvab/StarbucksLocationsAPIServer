@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const config = require('./config');
 const routes = require('./routes');
+//let fs = require('fs');
+let PDFParser = require('pdf2json');
+const request = require('request');
 
 mongoose.connection
   .on('error', error => console.log(error))
@@ -16,7 +19,6 @@ mongoose.connection
         }\nuser: ${info[0].user}\n`
       );
   });
-
 
 mongoose.connect(config.MONGO_URL, { useNewUrlParser: true });
 
